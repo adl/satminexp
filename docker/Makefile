@@ -1,10 +1,10 @@
 .PHONY: build-image push-image run
 
 build-image:
-	sudo docker build -t gadl/spot-dtwasat .
+	sudo docker build -t gadl/satminexp .
 
 push-image:
-	sudo docker push gadl/spot-dtwasat
+	sudo docker push gadl/satminexp
 
 run:
-	cd .. && sudo docker run -t -i -v $$PWD:/remote gadl/spot-dtwasat /bin/bash
+	cd ../scripts && sudo docker run -t -i -v $$PWD:/remote gadl/satminexp sh -c 'cd /remote && ./all.sh'
