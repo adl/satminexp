@@ -54,5 +54,9 @@ rm -rf plingeling plingeling-$V.zip
 
 # Rabinizer 3
 wget https://www7.in.tum.de/~kretinsk/rabinizer3/rabinizer.jar
-mv rabinizer.jar /usr/local/bin/rabinizer
+mv rabinizer.jar /usr/local/bin/rabinizer.jar
+cat >/usr/local/bin/rabinizer <<EOF
+#!/bin/sh
+exec java -jar /usr/local/bin/rabinizer.jar "$@"
+EOF
 chmod +x /usr/local/bin/rabinizer
