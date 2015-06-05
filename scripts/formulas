@@ -1,0 +1,16 @@
+GFp0,
+!(GFp0),
+GFp0 & GFp1,
+# Rabinizer3 produce incorrect DRA on several formulas
+!(GFp0 & GFp1), R3=noDRA
+GFp0 & GFp1 & GFp2, R3=noDRA
+!(GFp0 & GFp1 & GFp2), R3=noDRA
+(GFp0 & GFp1) | (GFp2 & GFp3),
+!((GFp0 & GFp1) | (GFp2 & GFp3)), R3=noDRA
+FGp0 | GFp1, R3=noDRA
+!(FGp0 | GFp1),
+(FGp0 | GFp1) & (FGp2 | GFp3), R3=noDRA
+!((FGp0 | GFp1) & (FGp2 | GFp3)), R3=noDRA
+FG((p0 & XXp1 & GFp1) U G(XX!p2 | XX(p0 & p1))),
+# Rabinizer3 throws an exception for this formula
+!(FG((p0 & XXp1 & GFp1) U G(XX!p2 | XX(p0 & p1)))), R3=no
