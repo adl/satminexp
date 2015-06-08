@@ -62,7 +62,7 @@ if test $# = 1; then
 
 	opt='acc="Rabin '$pairs'"'
 	if ltldo -H --timeout=$TIMEOUT -f "$f" >sat-TR$pairs-$line.hoa \
-		 "autfilt --cleanup-acc -H --sat-minimize='$opt' $input --name=%f >%O"; then
+		 "autfilt -C -H --cleanup-acc --sat-minimize='$opt' $input --name=%f >%O"; then
 	    if ! autfilt sat-TR$pairs-$line.hoa \
 		 --stats="$f,DRA$pairs,%S,%E,%A,%p,0,%F" >> $output; then
 		echo "$f,DRA$pairs,,,,,-1," >> $output
@@ -87,5 +87,5 @@ rm -f *-TR-*.hoa *-TR?-*.hoa TR-*.csv t-rabin.csv
 # Run all jobs
 grep -v '^#' formulas | parallel --bar -j$MAXJOBS $0 '{#}' {}
 # Gather results
-(echo 'formula,tool,states,edges,acc,complete,exit'
+(echo 'formula,tool,states,edges,acc,complete,exit,automaton'
 cat TR-*.csv) > t-rabin.csv
