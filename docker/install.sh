@@ -14,7 +14,7 @@ cd ..
 rm -rf ltl2ba-$V ltl2ba-$V.tar.gz
 
 # LTL3DRA
-V=0.2.1
+V=0.2.2
 wget http://sourceforge.net/projects/ltl3dra/files/ltl3dra-$V.tar.gz
 tar xvf ltl3dra-$V.tar.gz
 cd ltl3dra-$V
