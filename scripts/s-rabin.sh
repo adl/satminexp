@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Timeout for SAT-based minimization in sec.
-TIMEOUT=${TIMOUT:=300}
+TIMEOUT=${TIMEOUT:=300}
 # Max number of parallel jobs
 MAXJOBS=${MAXJOBS:=4}
 
