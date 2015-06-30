@@ -21,7 +21,7 @@ if test $# = 1; then
     acc=`autfilt --cleanup-acc ltl3dra-TGR-$line.hoa -H | grep acc-name | cut -d: -f2`
     acc=${acc:=other}
     autfilt ltl3dra-TGR-$line.hoa \
-	    --stats="$f,ltl3dra,%S,%E,$acc,%p,0,%F" >> $output
+	    --stats="$f,ltl3dra,%S,%E,$acc,%p,0,%F" >> $output || exit 0
 
     if ltldo -H --timeout=$TIMEOUT -f "$f" >ltl3dra-sat-TGR$pairs-$line.hoa \
 	     "autfilt -C -H --cleanup-acc --sat-minimize ltl3dra-TGR-$line.hoa --name=%f >%O"; then
