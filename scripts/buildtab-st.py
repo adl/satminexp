@@ -34,8 +34,9 @@ print(r"""\documentclass{standalone}
 \DeclareMathOperator{\R}{\mathbin{\mathsf{R}}} % release
 
 \begin{document}
-\begin{tabular}{lrrrrrr}""")
-print("\\texttt{" + sys.argv[1] + '}\\\\');
+\begin{tabular}{l|rrrr|rr}""")
+print("\\multicolumn{7}{l}{\\texttt{" + sys.argv[1] + '} and \\texttt{' + sys.argv[2] + '}}\\\\');
+print("&\\multicolumn{4}{c}{state-based acceptance}&\\multicolumn{2}{c}{transition-based acc.} \\\\")
 for j in ts:
     print("&", j, end='')
 for j in tt:
@@ -43,7 +44,7 @@ for j in tt:
 print("\\\\")
 
 def print_half_line(formula, csv, tools):
-    mins = 999999
+    global mins
     for j in tools:
         try:
             data = csv.loc[formula,j]
@@ -69,6 +70,7 @@ def print_half_line(formula, csv, tools):
     
 
 for i in l:
+    mins = 999999
     print('$' + spot.formula(i).to_str('latex') + '$', end=' ')
     print_half_line(i, csv_s, ts)
     print_half_line(i, csv_t, tt)
