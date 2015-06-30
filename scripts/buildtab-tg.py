@@ -31,11 +31,11 @@ print(r"""\documentclass{standalone}
 \DeclareMathOperator{\R}{\mathbin{\mathsf{R}}} % release
 
 \begin{document}
-\begin{tabular}{lrlrrlr}""")
-print("\\texttt{" + sys.argv[1] + '}\\\\');
+\begin{tabular}{l|rlr|rlr}""")
+print("\\multicolumn{2}{l}{\\texttt{" + sys.argv[1] + '}}\\\\');
 for j in t:
-    print("& \\multicolumn{2}{c}{%s}" % j, end='')
-    print("& minimized", end='')
+    print("& \\multicolumn{2}{l}{%s}" % j, end='')
+    print("& min", end='')
 print("\\\\")
 for i in l:
     print('$' + spot.formula(i).to_str('latex') + '$', end=' ')
@@ -62,7 +62,7 @@ for i in l:
                 v = int(val)
                 val = str(v)
                 if v < s:
-                    val = '\\textbf{' + val + '}'
+                    val = '\E ' + val
         except KeyError:
             val = ''
         print(val, end='')
