@@ -45,6 +45,7 @@ print("\\\\")
 
 def print_half_line(formula, csv, tools):
     global mins
+    global mina
     for j in tools:
         try:
             data = csv.loc[formula,j]
@@ -57,20 +58,31 @@ def print_half_line(formula, csv, tools):
             else:
                 s = int(val)
                 val = str(s)
+                a = int(data.acc)
                 if not j.startswith('DRA'):
                     if s < mins:
                         mins = s
+                    if a < mina:
+                        mina = a
                 else:
+                    hl = False;
                     if s < mins:
+                        val = '\\textbf{' + val + '}'
+                        hl = True
+                    if a < mina:
+                        a = '\\textbf{' + str(a) + '}'
+                        hl = True
+                    if hl:
                         val = '\\E ' + val
-                val += ' (' + str(int(data.acc)) + ')'
+                val += ' (' + str(a) + ')'
         except KeyError:
             val = 'na'
         print("&", val, end=' ')
-    
+
 
 for i in l:
     mins = 999999
+    mina = 999999
     print('$' + spot.formula(i).to_str('latex') + '$', end=' ')
     print_half_line(i, csv_s, ts)
     print_half_line(i, csv_t, tt)
