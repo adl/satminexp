@@ -1,6 +1,7 @@
 FROM debian:jessie
 MAINTAINER Alexandre Duret-Lutz <adl@lrde.epita.fr>
 RUN echo 'deb http://www.lrde.epita.fr/repo/debian/ stable/' >> /etc/apt/sources.list && \
+    echo 'deb http://ftp.uk.debian.org/debian jessie-backports main' >> /etc/apt/sources.list && \
     apt-get update && \
     RUNLEVEL=1 DEBIAN_FRONTEND=noninteractive \
       apt-get install -y --force-yes --no-install-recommends \
