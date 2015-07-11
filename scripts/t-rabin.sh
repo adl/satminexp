@@ -28,24 +28,9 @@ if test $# = 1; then
     autfilt ltl3dra-TR-$line.hoa \
 	    --stats="$f,ltl3dra,%S,%E,%A,%p,0,%F" >> $output
 
-    case :$R3: in
-	*':no:'*);; # Skip it.
-	*)
-	    # We run rabinizer in a unique subdirectory,
-	    # because it hardcodes the output to "output.hoa"
-	    # so we would not be able to run multiple instance
-	    # in parallel otherwise.
-	    mkdir tmp-$$
-	    cd tmp-$$;
-	    rabinizer -rabin-edges -formula "$(ltlfilt -f "$f" -p)" -hoa >/dev/null
-	    mv output.hoa ../rabinizer-TR-$line.hoa
-	    cd ..
-	    rmdir tmp-$$
-	    autfilt rabinizer-TR-$line.hoa \
-		    --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
-	    ;;
-    esac
-
+    # Rabinizer 3.1
+    rabinizer -format=hoa -auto=tr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-TR-$line.hoa
+    autfilt rabinizer-TR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
 
     for pairs in 1 2 3; do
 	# Compute the smallest automaton.  We want the smallest number

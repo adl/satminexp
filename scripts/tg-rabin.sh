@@ -34,36 +34,25 @@ if test $# = 1; then
 	echo "$f,ltl3dra-min,,,,,$?," >> $output
     fi
 
-    case :$R3: in
-	*':no:'*);; # Skip it.
-	*)
-	    # We run rabinizer in a unique subdirectory,
-	    # because it hardcodes the output to "output.hoa"
-	    # so we would not be able to run multiple instance
-	    # in parallel otherwise.
-	    mkdir tmp-$$
-	    cd tmp-$$;
-	    rabinizer -gen-edges -formula "$(ltlfilt -f "$f" -p)" -hoa >/dev/null
-	    mv output.hoa ../rabinizer-TGR-$line.hoa
-	    cd ..
-	    rmdir tmp-$$
-	    acc=`autfilt --cleanup-acc rabinizer-TGR-$line.hoa -H | grep acc-name | cut -d: -f2`
-	    acc=${acc:=other}
-	    autfilt rabinizer-TGR-$line.hoa \
-		    --stats="$f,rabinizer,%S,%E,$acc,%p,0,%F" >> $output
 
-	    if ltldo -H --timeout=$TIMEOUT -f "$f" >rabinizer-sat-TGR$pairs-$line.hoa \
-		     "autfilt -C -H --cleanup-acc --sat-minimize rabinizer-TGR-$line.hoa --name=%f >%O"; then
+    rabinizer -format=hoa -auto=tgr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-TGR-$line.hoa
+    autfilt rabinizer-TGR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
 
-		if ! autfilt rabinizer-sat-TGR$pairs-$line.hoa \
-		     --stats="$f,rabinizer-min,%S,%E,$acc,%p,0,%F" >> $output; then
-		    echo "$f,rabinizer-min,,,,,-1," >> $output
-		fi
-	    else
-		echo "$f,rabinizer-min,,,,,$?," >> $output
-	    fi
-	    ;;
-    esac
+    acc=`autfilt --cleanup-acc rabinizer-TGR-$line.hoa -H | grep acc-name | cut -d: -f2`
+    acc=${acc:=other}
+    autfilt rabinizer-TGR-$line.hoa \
+	    --stats="$f,rabinizer,%S,%E,$acc,%p,0,%F" >> $output
+
+    if ltldo -H --timeout=$TIMEOUT -f "$f" >rabinizer-sat-TGR-$line.hoa \
+	     "autfilt -C -H --cleanup-acc --sat-minimize rabinizer-TGR-$line.hoa --name=%f >%O"; then
+	if ! autfilt rabinizer-sat-TGR-$line.hoa \
+	     --stats="$f,rabinizer-min,%S,%E,$acc,%p,0,%F" >> $output; then
+	    echo "$f,rabinizer-min,,,,,-1," >> $output
+	fi
+    else
+	echo "$f,rabinizer-min,,,,,$?," >> $output
+    fi
+
     exit 0
 fi
 

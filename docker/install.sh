@@ -41,20 +41,21 @@ mv glucose /usr/local/bin
 cd ../..
 rm -rf glucose-syrup
 
-# Plingeling
-V=ayv-86bf266-140429
-wget http://fmv.jku.at/lingeling/plingeling-$V.zip
-mkdir plingeling
-cd plingeling
-unzip ../plingeling-$V.zip
-./build.sh
-mv binary/plingeling /usr/local/bin
-cd ..
-rm -rf plingeling plingeling-$V.zip
+## Plingeling
+## -- disabled until we need it.  The website did not respond on 2015-07-11
+# V=ayv-86bf266-140429
+# wget http://fmv.jku.at/lingeling/plingeling-$V.zip
+# mkdir plingeling
+# cd plingeling
+# unzip ../plingeling-$V.zip
+# ./build.sh
+# mv binary/plingeling /usr/local/bin
+# cd ..
+# rm -rf plingeling plingeling-$V.zip
 
-# Rabinizer 3
-wget https://www7.in.tum.de/~kretinsk/rabinizer3/rabinizer.jar
-mv rabinizer.jar /usr/local/bin/rabinizer.jar
+# Rabinizer 3.1
+wget https://www7.in.tum.de/~kretinsk/rabinizer3/rabinizer3.1.jar
+mv rabinizer3.1.jar /usr/local/bin/rabinizer.jar
 cat >/usr/local/bin/rabinizer <<\EOF
 #!/bin/sh
 exec java -jar /usr/local/bin/rabinizer.jar "$@"
