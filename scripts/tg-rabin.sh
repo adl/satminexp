@@ -36,23 +36,26 @@ if test $# = 1; then
 
 
     rabinizer -format=hoa -auto=tgr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-TGR-$line.hoa
-    autfilt rabinizer-TGR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
+    # The preversion of rabinizer 3.1 has a bug where it can output a non-deterministic automaton
+    # despite declaring "property: deterministic".  So autfilt -q will exit with $?=2 in this case.
+    if autfilt -q rabinizer-TGR-$line.hoa; then
+	acc=`autfilt --cleanup-acc rabinizer-TGR-$line.hoa -H | grep acc-name | cut -d: -f2`
+	acc=${acc:=other}
+	autfilt rabinizer-TGR-$line.hoa \
+		--stats="$f,rabinizer,%S,%E,$acc,%p,0,%F" >> $output
 
-    acc=`autfilt --cleanup-acc rabinizer-TGR-$line.hoa -H | grep acc-name | cut -d: -f2`
-    acc=${acc:=other}
-    autfilt rabinizer-TGR-$line.hoa \
-	    --stats="$f,rabinizer,%S,%E,$acc,%p,0,%F" >> $output
-
-    if ltldo -H --timeout=$TIMEOUT -f "$f" >rabinizer-sat-TGR-$line.hoa \
-	     "autfilt -C -H --cleanup-acc --sat-minimize rabinizer-TGR-$line.hoa --name=%f >%O"; then
-	if ! autfilt rabinizer-sat-TGR-$line.hoa \
-	     --stats="$f,rabinizer-min,%S,%E,$acc,%p,0,%F" >> $output; then
-	    echo "$f,rabinizer-min,,,,,-1," >> $output
+	if ltldo -H --timeout=$TIMEOUT -f "$f" >rabinizer-sat-TGR-$line.hoa \
+		 "autfilt -C -H --cleanup-acc --sat-minimize rabinizer-TGR-$line.hoa --name=%f >%O"; then
+	    if ! autfilt rabinizer-sat-TGR-$line.hoa \
+		 --stats="$f,rabinizer-min,%S,%E,$acc,%p,0,%F" >> $output; then
+		echo "$f,rabinizer-min,,,,,-1," >> $output
+	    fi
+	else
+	    echo "$f,rabinizer-min,,,,,$?," >> $output
 	fi
     else
-	echo "$f,rabinizer-min,,,,,$?," >> $output
+	rm -f rabinizer-TGR-$line.hoa
     fi
-
     exit 0
 fi
 

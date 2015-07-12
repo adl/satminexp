@@ -30,7 +30,13 @@ if test $# = 1; then
 
     # Rabinizer 3.1
     rabinizer -format=hoa -auto=tr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-TR-$line.hoa
-    autfilt rabinizer-TR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
+    # The preversion of rabinizer 3.1 has a bug where it can output a non-deterministic automaton
+    # despite declaring "property: deterministic".  So autfilt -q will exit with $?=2 in this case.
+    if autfilt -q rabinizer-TR-$line.hoa; then
+	autfilt rabinizer-TR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
+    else
+	rm -f rabinizer-TR-$line.hoa
+    fi
 
     for pairs in 1 2 3; do
 	# Compute the smallest automaton.  We want the smallest number
