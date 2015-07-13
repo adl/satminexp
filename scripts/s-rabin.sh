@@ -40,7 +40,7 @@ if test $# = 1; then
 	# We recompute this minimum for each value of $pairs, because
 	# if a previous value of $pairs produced an automaton, it is
 	# likely to be the one we should use.
-	input=`autfilt --cleanup-acc --stats='%a,%s,%t,%F' *-SR-$line.hoa |
+	input=`autfilt --cleanup-acc --stats='%a,%s,%t,%F' *-SR*-$line.hoa |
                sort          -t, -n -k3,3 |
                sort --stable -t, -n -k2,2 |
                sort --stable -t, -n -k1,1 |

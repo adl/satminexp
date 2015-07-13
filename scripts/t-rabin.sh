@@ -45,7 +45,15 @@ if test $# = 1; then
 	# We recompute this minimum for each value of $pairs, because
 	# if a previous value of $pairs produced an automaton, it is
 	# likely to be the one we should use.
-	input=`autfilt --cleanup-acc --stats='%a,%s,%t,%F' *-TR-$line.hoa |
+
+	# Also if we have a sat-based minimized automaton for this
+	# line, include it in the selection.
+	if test -f sat-SR$pairs-$line.hoa; then
+	    add=sat-SR$pairs-$line.hoa
+	else
+	    add=
+	fi
+	input=`autfilt --cleanup-acc --stats='%a,%s,%t,%F' *-TR*-$line.hoa $add |
                sort          -t, -n -k3,3 |
                sort --stable -t, -n -k2,2 |
                sort --stable -t, -n -k1,1 |
