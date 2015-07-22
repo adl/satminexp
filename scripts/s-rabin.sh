@@ -28,10 +28,10 @@ if test $# = 1; then
     autfilt ltl3dra-SR-$line.hoa \
 	    --stats="$f,ltl3dra,%S,%E,%A,%p,0,%F" >> $output
 
-    # State-output is broken in the preliminary version of Rabinizer 3.1
-    # rabinizer -format=hoa -auto=sr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-SR-$line.hoa
-    # autfilt rabinizer-SR-$line.hoa \
-    #	    --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
+    # Run Rabinizer
+    rabinizer -format=hoa -auto=sr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-SR-$line.hoa
+    autfilt rabinizer-SR-$line.hoa \
+    	    --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
 
     for pairs in 1 2 3; do
 	# Compute the smallest automaton.  We want the smallest number
