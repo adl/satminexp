@@ -5,8 +5,8 @@ TIMEOUT=${TIMEOUT:=300}
 # Max number of parallel jobs
 MAXJOBS=${MAXJOBS:=4}
 
-# This is the code for a single jobs, i.e., it receive one formula,
-# translate it for all tools, and minimize it for different Rabin
+# This is the code for a single jobs, i.e., it receives one formula,
+# translates it for all tools, and minimizes it for different Rabin
 # acceptance.
 if test $# = 1; then
     line=$1
@@ -17,26 +17,19 @@ if test $# = 1; then
     : > $output
 
     # Run ltl2dstar using ltl2tgba
-    ltlfilt -f "$f" -l |
-	ltl2dstar --ltl2nba=spin:ltl2tgba@-Ds --output-format=hoa \
-		  - ltl2dstar-TR-$line.hoa
-    autfilt ltl2dstar-TR-$line.hoa \
-	    --stats="$f,ltl2dstar,%S,%E,%A,%p,0,%F" >> $output
+    out=ltl2dstar-TR-$line.hoa
+    ltldo -f "$f" 'ltl2dstar --ltl2nba=spin:ltl2tgba@-Ds' --name="$f,ltl2dstar,%s,%e,%a,%p,0,%r" -H >$out
+    autfilt --stats="%M,%F" $out >> $output
 
     # Run ltl3dra
-    ltlfilt -f "$f" -p -s | ltl3dra -H3 -F - > ltl3dra-TR-$line.hoa
-    autfilt ltl3dra-TR-$line.hoa \
-	    --stats="$f,ltl3dra,%S,%E,%A,%p,0,%F" >> $output
+    out=ltl3dra-TR-$line.hoa
+    ltldo -f "$f" 'ltl3dra -H3' --name="$f,ltl3dra,%s,%e,%a,%p,0,%r" -H >$out
+    autfilt --stats="%M,%F" $out >> $output
 
     # Rabinizer 3.1
-    rabinizer -format=hoa -auto=tr -silent -out=std "$(ltlfilt -f "$f" -p)" >rabinizer-TR-$line.hoa
-    # The preversion of rabinizer 3.1 has a bug where it can output a non-deterministic automaton
-    # despite declaring "property: deterministic".  So autfilt -q will exit with $?=2 in this case.
-    if autfilt -q rabinizer-TR-$line.hoa; then
-	autfilt rabinizer-TR-$line.hoa --stats="$f,rabinizer,%S,%E,%A,%p,0,%F" >> $output
-    else
-	rm -f rabinizer-TR-$line.hoa
-    fi
+    out=rabinizer-TR-$line.hoa
+    ltldo -f "$f" 'rabinizer -format=hoa -auto=tr -silent -out=std %f >%H' --name="$f,rabinizer,%s,%e,%a,%p,0,%r" -H >$out
+    autfilt --stats="%M,%F" $out >> $output
 
     for pairs in 1 2 3; do
 	# Compute the smallest automaton.  We want the smallest number
@@ -61,13 +54,13 @@ if test $# = 1; then
 
 	opt='acc="Rabin '$pairs'"'
 	if ltldo -H --timeout=$TIMEOUT -f "$f" >sat-TR$pairs-$line.hoa \
-		 "autfilt -C -H --cleanup-acc --sat-minimize='$opt' $input --name=%f >%O"; then
+		 "autfilt -C -H --cleanup-acc --sat-minimize='$opt' $input --name=%%r >%O #%f"; then
 	    if ! autfilt sat-TR$pairs-$line.hoa \
-		 --stats="$f,DRA$pairs,%S,%E,%A,%p,0,%F" >> $output; then
-		echo "$f,DRA$pairs,,,,,-1," >> $output
+		 --stats="$f,DRA$pairs,%S,%E,%A,%p,0,%M,%F" >> $output; then
+		echo "$f,DRA$pairs,,,,,-1,," >> $output
 	    fi
 	else
-	    echo "$f,DRA$pairs,,,,,$?," >> $output
+	    echo "$f,DRA$pairs,,,,,$?,," >> $output
 	fi
     done
     exit 0
@@ -86,5 +79,5 @@ rm -f *-TR-*.hoa *-TR?-*.hoa TR-*.csv t-rabin.csv
 # Run all jobs
 grep -v '^#' formulas | parallel --bar -j$MAXJOBS $0 '{#}' {}
 # Gather results
-(echo 'formula,tool,states,edges,acc,complete,exit,automaton'
+(echo 'formula,tool,states,edges,acc,complete,exit,time,automaton'
 cat TR-*.csv) > t-rabin.csv
